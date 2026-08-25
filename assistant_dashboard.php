@@ -702,12 +702,14 @@ if ($search_term && $active_section == 'occupants') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistant Dashboard - Dorm Management</title>
+    <title>Assistant Portal - Enterprise Dorm Management</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shared_styles.css">
+    <script src="assets/js/dashboard_enhancements.js" defer></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -1531,36 +1533,49 @@ if ($search_term && $active_section == 'occupants') {
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3>Dorm Management</h3>
-            <small>Assistant Portal</small>
+            <div class="sidebar-logo-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="sidebar-logo-text">
+                <h3>DormStaff</h3>
+                <small>Assistant Portal</small>
+            </div>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="?section=home" class="<?php echo $active_section == 'home' ? 'active' : ''; ?>"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="?section=home" class="<?php echo $active_section == 'home' ? 'active' : ''; ?>"><i class="fas fa-th-large"></i> Dashboard</a></li>
             <li><a href="?section=attendance" class="<?php echo $active_section == 'attendance' ? 'active' : ''; ?>"><i class="fas fa-clipboard-check"></i> Attendance</a></li>
-            <li><a href="?section=fines" class="<?php echo $active_section == 'fines' ? 'active' : ''; ?>"><i class="fas fa-money-bill-wave"></i> Fines Management</a></li>
-            <li><a href="?section=services" class="<?php echo $active_section == 'services' ? 'active' : ''; ?>"><i class="fas fa-tools"></i> Service Requests</a></li>
+            <li><a href="?section=fines" class="<?php echo $active_section == 'fines' ? 'active' : ''; ?>"><i class="fas fa-money-bill-wave"></i> Fines</a></li>
+            <li><a href="?section=services" class="<?php echo $active_section == 'services' ? 'active' : ''; ?>"><i class="fas fa-tools"></i> Service Tickets</a></li>
             <li><a href="?section=approvals" class="<?php echo $active_section == 'approvals' ? 'active' : ''; ?>"><i class="fas fa-check-circle"></i> Approvals</a></li>
             <li><a href="?section=occupants" class="<?php echo $active_section == 'occupants' ? 'active' : ''; ?>"><i class="fas fa-users"></i> Occupants</a></li>
             <li><a href="?section=reports" class="<?php echo $active_section == 'reports' ? 'active' : ''; ?>"><i class="fas fa-chart-bar"></i> Reports</a></li>
-            <li><a href="?section=profile" class="<?php echo $active_section == 'profile' ? 'active' : ''; ?>"><i class="fas fa-user-cog"></i> Profile</a></li>
+            <li><a href="?section=profile" class="<?php echo $active_section == 'profile' ? 'active' : ''; ?>"><i class="fas fa-user-cog"></i> Settings</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <button class="mobile-menu-btn" id="mobileMenuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1>Assistant Dashboard</h1>
+            <div class="header-title-wrapper">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="liveGreeting">Assistant Portal</h1>
+            </div>
+
+            <!-- Global Live Search -->
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearchInput" placeholder="Filter records or search occupants...">
+                <span class="header-search-shortcut">Ctrl K</span>
+            </div>
+
             <div class="header-actions">
-                <span class="user-display">
-                    <div class="user-avatar">
-                        <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
-                    </div>
-                    <?php echo $_SESSION['full_name']; ?> <span class="role-badge">Assistant</span>
-                </span>
-                
+                <!-- Theme Switcher -->
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
                 <!-- Notification Bell -->
                 <div class="notification-dropdown">
                     <button class="notification-btn">
@@ -1571,7 +1586,7 @@ if ($search_term && $active_section == 'occupants') {
                     </button>
                     <div class="notification-content">
                         <?php if (empty($notifications)): ?>
-                            <a href="#" style="pointer-events: none; text-align: center;">No notifications</a>
+                            <a href="#" style="pointer-events: none; text-align: center;">No new notifications</a>
                         <?php else: ?>
                             <?php foreach ($notifications as $notification): ?>
                                 <a href="javascript:void(0)" 
@@ -1579,27 +1594,36 @@ if ($search_term && $active_section == 'occupants') {
                                    onclick="markNotificationAsRead(<?php echo $notification['id']; ?>)">
                                     <strong><?php echo $notification['title']; ?></strong><br>
                                     <small><?php echo $notification['message']; ?></small><br>
-                                    <small style="color: #7f8c8d;"><?php echo date('M j, Y g:i A', strtotime($notification['created_at'])); ?></small>
+                                    <small style="color: var(--text-muted);"><?php echo date('M j, Y g:i A', strtotime($notification['created_at'])); ?></small>
                                 </a>
                             <?php endforeach; ?>
-                            <div style="padding: 15px; background: #f8f9fa;">
-                                <form method="POST" style="display: inline;">
+                            <div style="padding: 12px; background: var(--bg-body); display: flex; gap: 8px;">
+                                <form method="POST" style="flex: 1;">
                                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                                    <button type="submit" name="mark_all_notifications_read" class="btn btn-small">Mark All Read</button>
+                                    <button type="submit" name="mark_all_notifications_read" class="btn btn-small btn-outline" style="width: 100%;">Mark Read</button>
                                 </form>
-                                <form method="POST" style="display: inline;">
+                                <form method="POST" style="flex: 1;">
                                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                                    <button type="submit" name="clear_old_notifications" class="btn btn-small btn-danger">Clear Old</button>
+                                    <button type="submit" name="clear_old_notifications" class="btn btn-small btn-danger" style="width: 100%;">Clear</button>
                                 </form>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
-                
+
+                <!-- User Profile Display -->
+                <span class="user-display">
+                    <div class="user-avatar">
+                        <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
+                    </div>
+                    <span><?php echo $_SESSION['full_name']; ?></span>
+                    <span class="badge badge-info">Assistant</span>
+                </span>
+
                 <form action="logout.php" method="POST" class="logout-form">
                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                     <button type="submit" class="logout-btn" onclick="return confirm('Are you sure you want to logout?')">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </form>
             </div>

@@ -845,20 +845,12 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Occupant Dashboard - Dorm Management System</title>
+    <title>Occupant Portal - Enterprise Dorm Management</title>
     <meta name="description" content="Dormitory management system occupant portal">
-    
-    <!-- Security headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' data: https:;">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    
-    <!-- External resources -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    
+    <link rel="stylesheet" href="shared_styles.css">
+    <script src="assets/js/dashboard_enhancements.js" defer></script>
     <style>
         /* Tab navigation styles from dormdean dashboard */
         .tab-nav {
@@ -1230,121 +1222,126 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3>Dorm Management</h3>
-            <small>Occupant Portal</small>
+            <div class="sidebar-logo-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="sidebar-logo-text">
+                <h3>MyDorm</h3>
+                <small>Occupant Portal</small>
+            </div>
         </div>
         <ul class="sidebar-menu">
             <li><a href="?section=home" class="<?php echo $active_section == 'home' ? 'active' : ''; ?>">
-                <i class="fas fa-home"></i> Dashboard
+                <i class="fas fa-th-large"></i> Dashboard
             </a></li>
             <li><a href="?section=reservations" class="<?php echo $active_section == 'reservations' ? 'active' : ''; ?>">
                 <i class="fas fa-bed"></i> Room Reservations
             </a></li>
             <li><a href="?section=attendance" class="<?php echo $active_section == 'attendance' ? 'active' : ''; ?>">
-                <i class="fas fa-chart-bar"></i> Attendance & Fines
+                <i class="fas fa-receipt"></i> Attendance & Fines
             </a></li>
             <li><a href="?section=visitors" class="<?php echo $active_section == 'visitors' ? 'active' : ''; ?>">
-                <i class="fas fa-users"></i> Visitor Management
+                <i class="fas fa-user-friends"></i> Visitor Passes
             </a></li>
             <li><a href="?section=services" class="<?php echo $active_section == 'services' ? 'active' : ''; ?>">
-                <i class="fas fa-tools"></i> Service Requests
+                <i class="fas fa-tools"></i> Maintenance Tickets
             </a></li>
             <li><a href="?section=announcements" class="<?php echo $active_section == 'announcements' ? 'active' : ''; ?>">
-                <i class="fas fa-bullhorn"></i> Announcements
+                <i class="fas fa-bullhorn"></i> Broadcasts
             </a></li>
             <li><a href="?section=profile" class="<?php echo $active_section == 'profile' ? 'active' : ''; ?>">
-                <i class="fas fa-user"></i> My Profile
+                <i class="fas fa-user-circle"></i> My Profile
             </a></li>
             <li><a href="?section=documents" class="<?php echo $active_section == 'documents' ? 'active' : ''; ?>">
-                <i class="fas fa-file-alt"></i> Documents
+                <i class="fas fa-folder-open"></i> Documents
             </a></li>
         </ul>
         
-        <!-- Current room info -->
+        <!-- Current room badge info -->
         <?php if (!empty($current_room)): ?>
-        <div class="current-room-info" style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px;">
-            <h4 style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 8px;">Current Room</h4>
-            <p style="font-weight: bold; font-size: 1.1rem;">
-                Room <?php echo $current_room['room_number']; ?>
-                <?php if ($current_room['floor']): ?>
-                    <br><small>Floor <?php echo $current_room['floor']; ?></small>
-                <?php endif; ?>
-            </p>
-        </div>
-        <?php endif; ?>
-        
-        <!-- Emergency contacts -->
-        <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto;">
-            <h4 style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 8px;">Emergency Contacts</h4>
-            <div style="font-size: 0.85rem;">
-                <div style="margin-bottom: 5px;">
-                    <i class="fas fa-shield-alt" style="color: #4cc9f0;"></i>
-                    Campus Security: 0975-543-6523
-                </div>
-                <div style="margin-bottom: 5px;">
-                    <i class="fas fa-ambulance" style="color: #e63946;"></i>
-                    Medical: 0975-656-2356
-                </div>
+        <div class="current-room-info" style="padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: auto; background: rgba(255,255,255,0.03);">
+            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Current Assignment</div>
+            <div style="font-weight: 800; font-size: 1.1rem; color: white; margin-top: 2px;">
+                <i class="fas fa-door-open" style="color: var(--secondary); margin-right: 6px;"></i> Room <?php echo $current_room['room_number']; ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <div>
-                <h1>Occupant Dashboard</h1>
-                <p style="margin-top: 5px; color: #666; font-size: 0.9rem;">
-                    Welcome back, <?php echo htmlspecialchars($user_fullname); ?>!
-                    <?php if (!empty($current_room)): ?>
-                        • Room <?php echo $current_room['room_number']; ?>
-                    <?php endif; ?>
-                    • <span class="role-badge">Occupant</span>
-                </p>
+            <div class="header-title-wrapper">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="liveGreeting">Welcome Back</h1>
             </div>
-<div style="display: flex; align-items: center; gap: 15px;">
-    <!-- Notification Bell -->
-    <div class="notification-dropdown">
-        <button class="btn btn-warning" aria-label="Notifications">
-            <i class="fas fa-bell"></i>
-            <?php if ($unread_count > 0): ?>
-                <span class="notification-badge"><?php echo $unread_count; ?></span>
-            <?php endif; ?>
-        </button>
-        <div class="notification-content">
-            <?php if (empty($notifications)): ?>
-                <a href="#" style="pointer-events: none; text-align: center;">No notifications</a>
-            <?php else: ?>
-                <?php foreach ($notifications as $notification): ?>
-                    <a href="javascript:void(0)" 
-                       class="notification-item <?php echo $notification['is_read'] ? '' : 'notification-unread'; ?>"
-                       onclick="markNotificationAsRead(<?php echo $notification['id']; ?>)">
-                        <strong><?php echo htmlspecialchars($notification['title']); ?></strong><br>
-                        <small><?php echo htmlspecialchars($notification['message']); ?></small><br>
-                        <small style="color: #7f8c8d;"><?php echo date('M j, Y g:i A', strtotime($notification['created_at'])); ?></small>
-                    </a>
-                <?php endforeach; ?>
-                <div style="padding: 15px; background: #f8f9fa;">
-                    <form method="POST" style="display: inline;">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                        <button type="submit" name="mark_all_notifications_read" class="btn btn-small">Mark All Read</button>
-                    </form>
-                    <form method="POST" style="display: inline;">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                        <button type="submit" name="clear_old_notifications" class="btn btn-small btn-danger">Clear Old</button>
-                    </form>
+
+            <!-- Global Live Search -->
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearchInput" placeholder="Search notices, tickets, passes...">
+                <span class="header-search-shortcut">Ctrl K</span>
+            </div>
+
+            <div class="header-actions">
+                <!-- Theme Switcher -->
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <!-- Notification Bell -->
+                <div class="notification-dropdown">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notification-badge"><?php echo $unread_count; ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <div class="notification-content">
+                        <?php if (empty($notifications)): ?>
+                            <a href="#" style="pointer-events: none; text-align: center;">No new notifications</a>
+                        <?php else: ?>
+                            <?php foreach ($notifications as $notification): ?>
+                                <a href="javascript:void(0)" 
+                                   class="notification-item <?php echo $notification['is_read'] ? '' : 'notification-unread'; ?>"
+                                   onclick="markNotificationAsRead(<?php echo $notification['id']; ?>)">
+                                    <strong><?php echo htmlspecialchars($notification['title']); ?></strong><br>
+                                    <small><?php echo htmlspecialchars($notification['message']); ?></small><br>
+                                    <small style="color: var(--text-muted);"><?php echo date('M j, Y g:i A', strtotime($notification['created_at'])); ?></small>
+                                </a>
+                            <?php endforeach; ?>
+                            <div style="padding: 12px; background: var(--bg-body); display: flex; gap: 8px;">
+                                <form method="POST" style="flex: 1;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                    <button type="submit" name="mark_all_notifications_read" class="btn btn-small btn-outline" style="width: 100%;">Mark Read</button>
+                                </form>
+                                <form method="POST" style="flex: 1;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                    <button type="submit" name="clear_old_notifications" class="btn btn-small btn-danger" style="width: 100%;">Clear</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            <?php endif; ?>
-        </div>
-    </div>
-    
-    <form action="logout.php" method="POST" class="logout-form">
-        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-        <button type="submit" class="logout-btn" onclick="return confirm('Are you sure you want to logout?')">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-    </form>
-</div>
+
+                <!-- User Profile Display -->
+                <span class="user-display">
+                    <div class="user-avatar">
+                        <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
+                    </div>
+                    <span><?php echo htmlspecialchars($user_fullname); ?></span>
+                    <span class="badge badge-success">Occupant</span>
+                </span>
+
+                <form action="logout.php" method="POST" class="logout-form">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                    <button type="submit" class="logout-btn" onclick="return confirm('Are you sure you want to logout?')">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
+            </div>
         </div>
         
         <div class="content">
@@ -1521,6 +1518,9 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
 
             <!-- Room Reservations Section -->
             <div id="reservations-section" class="section <?php echo $active_section == 'reservations' ? 'active' : ''; ?>">
+                <!-- Interactive 2D Room Status Map -->
+                <div id="roomMatrixVisualizer"></div>
+
                 <!-- Reserve Room Form -->
                 <div class="card">
                     <h3><i class="fas fa-bed"></i> Reserve a Room</h3>
