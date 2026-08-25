@@ -861,12 +861,14 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dean Dashboard - Dorm Management</title>
+    <title>Dean Portal - Enterprise Dorm Management</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shared_styles.css">
+    <script src="assets/js/dashboard_enhancements.js" defer></script>
     <style>
         /* Using the same CSS as assistant_dashboard.php */
         :root {
@@ -1711,55 +1713,67 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3>Dorm Management</h3>
-            <small>Dean Portal</small>
+            <div class="sidebar-logo-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="sidebar-logo-text">
+                <h3>DormDean</h3>
+                <small>Dean Administration</small>
+            </div>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="?section=home" class="<?php echo $active_section == 'home' ? 'active' : ''; ?>"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="?section=home" class="<?php echo $active_section == 'home' ? 'active' : ''; ?>"><i class="fas fa-th-large"></i> Dashboard</a></li>
             <li><a href="?section=reservations" class="<?php echo $active_section == 'reservations' ? 'active' : ''; ?>"><i class="fas fa-bed"></i> Reservations</a></li>
             <li><a href="?section=approvals" class="<?php echo $active_section == 'approvals' ? 'active' : ''; ?>">
-                <i class="fas fa-user-check"></i> Registration Approvals
+                <i class="fas fa-user-check"></i> Approvals
                 <?php if (count($pending_registrations) > 0): ?>
-                    <span class="notification-badge"><?php echo count($pending_registrations); ?></span>
+                    <span class="badge badge-warning"><?php echo count($pending_registrations); ?></span>
                 <?php endif; ?>
             </a></li>
-            <li><a href="?section=rooms" class="<?php echo $active_section == 'rooms' ? 'active' : ''; ?>"><i class="fas fa-building"></i> Room Management</a></li>
-            <li><a href="?section=fines" class="<?php echo $active_section == 'fines' ? 'active' : ''; ?>"><i class="fas fa-money-bill-wave"></i> Fines</a></li>
-            <!-- Payment Requests menu item has been removed -->
-            <li><a href="?section=leaves" class="<?php echo $active_section == 'leaves' ? 'active' : ''; ?>"><i class="fas fa-sign-out-alt"></i> Leave Logs</a></li>
+            <li><a href="?section=rooms" class="<?php echo $active_section == 'rooms' ? 'active' : ''; ?>"><i class="fas fa-door-open"></i> Room Directory</a></li>
+            <li><a href="?section=fines" class="<?php echo $active_section == 'fines' ? 'active' : ''; ?>"><i class="fas fa-receipt"></i> Fines & Dues</a></li>
+            <li><a href="?section=leaves" class="<?php echo $active_section == 'leaves' ? 'active' : ''; ?>"><i class="fas fa-walking"></i> Leave Logs</a></li>
             <li><a href="?section=services" class="<?php echo $active_section == 'services' ? 'active' : ''; ?>">
-                <i class="fas fa-tools"></i> Service Requests
+                <i class="fas fa-tools"></i> Service Tickets
                 <?php if ($stats['pending_services'] > 0): ?>
-                    <span class="notification-badge"><?php echo $stats['pending_services']; ?></span>
+                    <span class="badge badge-warning"><?php echo $stats['pending_services']; ?></span>
                 <?php endif; ?>
             </a></li>
             <li><a href="?section=visitors" class="<?php echo $active_section == 'visitors' ? 'active' : ''; ?>">
-                <i class="fas fa-user-friends"></i> Visitor Approvals
+                <i class="fas fa-id-badge"></i> Visitor Pass
                 <?php if (count($pending_visitors) > 0): ?>
-                    <span class="notification-badge"><?php echo count($pending_visitors); ?></span>
+                    <span class="badge badge-warning"><?php echo count($pending_visitors); ?></span>
                 <?php endif; ?>
             </a></li>
-            <li><a href="?section=announcements" class="<?php echo $active_section == 'announcements' ? 'active' : ''; ?>"><i class="fas fa-bullhorn"></i> Announcements</a></li>
-            <li><a href="?section=reports" class="<?php echo $active_section == 'reports' ? 'active' : ''; ?>"><i class="fas fa-chart-pie"></i> Reports</a></li>
-            <li><a href="?section=profile" class="<?php echo $active_section == 'profile' ? 'active' : ''; ?>"><i class="fas fa-user-cog"></i> Profile</a></li>
+            <li><a href="?section=announcements" class="<?php echo $active_section == 'announcements' ? 'active' : ''; ?>"><i class="fas fa-bullhorn"></i> Broadcasts</a></li>
+            <li><a href="?section=reports" class="<?php echo $active_section == 'reports' ? 'active' : ''; ?>"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="?section=profile" class="<?php echo $active_section == 'profile' ? 'active' : ''; ?>"><i class="fas fa-user-shield"></i> Settings</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <button class="mobile-menu-btn" id="mobileMenuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1>Dean Dashboard</h1>
+            <div class="header-title-wrapper">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="liveGreeting">Dean Portal</h1>
+            </div>
+
+            <!-- Global Live Search -->
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearchInput" placeholder="Filter records or search rooms...">
+                <span class="header-search-shortcut">Ctrl K</span>
+            </div>
+
             <div class="header-actions">
-                <span class="user-display">
-                    <div class="user-avatar">
-                        <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
-                    </div>
-                    <?php echo $_SESSION['full_name']; ?> <span class="role-badge"><?php echo ucfirst(str_replace('_', ' ', $_SESSION['user_type'])); ?></span>
-                </span>
-                
+                <!-- Theme Switcher -->
+                <button class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
                 <!-- Notification Bell -->
                 <div class="notification-dropdown">
                     <button class="notification-btn">
@@ -1770,7 +1784,7 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
                     </button>
                     <div class="notification-content">
                         <?php if (empty($notifications)): ?>
-                            <a href="#" style="pointer-events: none; text-align: center;">No notifications</a>
+                            <a href="#" style="pointer-events: none; text-align: center;">No new notifications</a>
                         <?php else: ?>
                             <?php foreach ($notifications as $notification): ?>
                                 <a href="javascript:void(0)" 
@@ -1778,27 +1792,36 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
                                    onclick="markNotificationAsRead(<?php echo $notification['id']; ?>)">
                                     <strong><?php echo $notification['title']; ?></strong><br>
                                     <small><?php echo $notification['message']; ?></small><br>
-                                    <small style="color: #7f8c8d;"><?php echo date('M j, Y g:i A', strtotime($notification['created_at'])); ?></small>
+                                    <small style="color: var(--text-muted);"><?php echo date('M j, Y g:i A', strtotime($notification['created_at'])); ?></small>
                                 </a>
                             <?php endforeach; ?>
-                            <div style="padding: 15px; background: #f8f9fa;">
-                                <form method="POST" style="display: inline;">
+                            <div style="padding: 12px; background: var(--bg-body); display: flex; gap: 8px;">
+                                <form method="POST" style="flex: 1;">
                                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                                    <button type="submit" name="mark_all_notifications_read" class="btn btn-small">Mark All Read</button>
+                                    <button type="submit" name="mark_all_notifications_read" class="btn btn-small btn-outline" style="width: 100%;">Mark Read</button>
                                 </form>
-                                <form method="POST" style="display: inline;">
+                                <form method="POST" style="flex: 1;">
                                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                                    <button type="submit" name="clear_old_notifications" class="btn btn-small btn-danger">Clear Old</button>
+                                    <button type="submit" name="clear_old_notifications" class="btn btn-small btn-danger" style="width: 100%;">Clear</button>
                                 </form>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
-                
+
+                <!-- User Profile Display -->
+                <span class="user-display">
+                    <div class="user-avatar">
+                        <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
+                    </div>
+                    <span><?php echo $_SESSION['full_name']; ?></span>
+                    <span class="badge badge-primary"><?php echo ucfirst(str_replace('_', ' ', $_SESSION['user_type'])); ?></span>
+                </span>
+
                 <form action="logout.php" method="POST" class="logout-form">
                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                     <button type="submit" class="logout-btn" onclick="return confirm('Are you sure you want to logout?')">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </form>
             </div>
@@ -2075,9 +2098,12 @@ $active_section = isset($_GET['section']) ? sanitizeInput($_GET['section']) : 'h
                 
                 <!-- Room Overview Tab -->
                 <div id="room-overview" class="tab-content active">
+                    <!-- Interactive 2D Room Status Map -->
+                    <div id="roomMatrixVisualizer"></div>
+
                     <div class="card">
                         <div class="card-header">
-                            <h3><i class="fas fa-building"></i> Room Status Overview</h3>
+                            <h3><i class="fas fa-building"></i> Room Directory & Status</h3>
                         </div>
                         
                         <div class="room-grid">

@@ -84,102 +84,114 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - Dorm Management</title>
+    <title>Reset Password - Enterprise Dorm Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shared_styles.css">
+    <script src="assets/js/dashboard_enhancements.js" defer></script>
     <style>
-        :root { --primary: #4361ee; --secondary: #3f37c9; --dark: #1d3557; --light: #f8f9fa; --danger: #e63946; --success: #4cc9f0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #31104b 100%);
             min-height: 100vh;
-            display: flex; justify-content: center; align-items: center; padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container-wrapper {
+            width: 100%;
+            max-width: 440px;
         }
         .container {
-            background: white; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            overflow: hidden; width: 100%; max-width: 420px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         .header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; padding: 30px; text-align: center;
+            background: var(--brand-gradient);
+            color: white;
+            padding: 32px 28px;
+            text-align: center;
+            position: relative;
         }
-        .header h1 { font-size: 1.8rem; margin-bottom: 5px; }
-        .header p { opacity: 0.9; font-size: 0.95rem; }
+        .header-theme-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+        .header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+        .header p { opacity: 0.9; font-size: 0.88rem; }
         .body { padding: 30px; }
-        .form-group { margin-bottom: 20px; position: relative; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark); }
-        .form-control {
-            width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 10px;
-            font-size: 1rem; transition: all 0.3s; background: var(--light); padding-right: 45px;
-        }
-        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67,97,238,0.1); background: white; }
+        .form-group { position: relative; margin-bottom: 20px; }
         .password-toggle {
-            position: absolute; right: 12px; top: 38px; background: none; border: none;
-            color: #6c757d; cursor: pointer; z-index: 2;
+            position: absolute; right: 14px; top: 40px; background: none; border: none;
+            color: var(--text-muted); cursor: pointer; font-size: 1rem;
         }
-        .btn {
-            width: 100%; padding: 14px; background: var(--primary); color: white; border: none;
-            border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
         }
-        .btn:hover { background: var(--secondary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(67,97,238,0.3); }
-        .alert { padding: 12px 15px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px; }
-        .alert-danger { background: #ffe6e6; color: var(--danger); border-left: 4px solid var(--danger); }
-        .alert-success { background: #e6f7e6; color: #2e7d32; border-left: 4px solid #2e7d32; }
-        .footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e9ecef; font-size: 0.9rem; }
-        .footer a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        .footer a:hover { text-decoration: underline; }
-        .hint { font-size: 0.85rem; color: #6c757d; margin-top: 5px; }
-        @media (max-width: 480px) { .header { padding: 25px 20px; } .body { padding: 25px 20px; } }
+        .footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .hint { font-size: 0.8rem; color: var(--text-secondary); margin-top: 6px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-lock"></i> Reset Password</h1>
-            <p>Choose a new password for your account</p>
-        </div>
-        <div class="body">
-            <?php if (!empty($error)): ?>
-                <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?></div>
-            <?php endif; ?>
-            <?php if (!empty($success)): ?>
-                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success); ?></div>
-            <?php endif; ?>
-
-            <?php if ($token_valid && empty($success)): ?>
-            <form method="POST">
-                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($_GET['token']); ?>">
-
-                <div class="form-group">
-                    <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" readonly style="background: #f5f5f5; cursor: not-allowed;">
+    <div class="container-wrapper">
+        <div class="container">
+            <div class="header">
+                <div class="header-theme-toggle">
+                    <button class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                 </div>
+                <h1><i class="fas fa-lock"></i> Reset Password</h1>
+                <p>Choose a new password for your account</p>
+            </div>
+            <div class="body">
+                <?php if (!empty($error)): ?>
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
+                <?php if (!empty($success)): ?>
+                    <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success); ?></div>
+                <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="password" class="form-label"><i class="fas fa-lock"></i> New Password</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter new password" required minlength="8">
-                    <button type="button" class="password-toggle" onclick="togglePassword('password', this)"><i class="fas fa-eye"></i></button>
-                    <div class="hint">At least 8 characters with uppercase, lowercase, and number</div>
+                <?php if ($token_valid && empty($success)): ?>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($_GET['token']); ?>">
+
+                    <div class="form-group">
+                        <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" readonly style="cursor: not-allowed;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label"><i class="fas fa-lock"></i> New Password</label>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Enter new password" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)"><i class="fas fa-eye"></i></button>
+                        <div class="hint">At least 8 characters with uppercase, lowercase, and number</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password" class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm new password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirm_password', this)"><i class="fas fa-eye"></i></button>
+                    </div>
+
+                    <button type="submit" name="reset_password" class="btn btn-primary" style="width: 100%;"><i class="fas fa-save"></i> Reset Password</button>
+                </form>
+                <?php elseif (empty($success)): ?>
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px 0;">
+                        <i class="fas fa-info-circle"></i> Please use the link sent to your email.
+                    </p>
+                <?php endif; ?>
+
+                <div class="footer">
+                    <a href="login.php"><i class="fas fa-arrow-left"></i> Back to Login</a>
                 </div>
-
-                <div class="form-group">
-                    <label for="confirm_password" class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm new password" required>
-                    <button type="button" class="password-toggle" onclick="togglePassword('confirm_password', this)"><i class="fas fa-eye"></i></button>
-                </div>
-
-                <button type="submit" name="reset_password" class="btn"><i class="fas fa-save"></i> Reset Password</button>
-            </form>
-            <?php elseif (empty($success)): ?>
-                <p style="text-align: center; color: #6c757d; padding: 20px 0;">
-                    <i class="fas fa-info-circle"></i> Please use the link sent to your email.
-                </p>
-            <?php endif; ?>
-
-            <div class="footer">
-                <a href="login.php"><i class="fas fa-arrow-left"></i> Back to Login</a>
             </div>
         </div>
     </div>

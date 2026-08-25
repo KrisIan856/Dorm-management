@@ -125,253 +125,130 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Dorm Management System</title>
+    <title>Register - Enterprise Dorm Management</title>
     <meta name="description" content="Create a new account for Dorm Management System">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shared_styles.css">
+    <script src="assets/js/dashboard_enhancements.js" defer></script>
     <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --dark: #1d3557;
-            --light: #f8f9fa;
-            --danger: #e63946;
-            --warning: #fca311;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #31104b 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 24px 20px;
+            position: relative;
         }
-        
-        .register-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        .register-card-wrapper {
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
+            position: relative;
+            z-index: 10;
         }
-        
+        .register-container {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
         .register-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--brand-gradient);
             color: white;
-            padding: 30px;
+            padding: 32px 28px;
             text-align: center;
+            position: relative;
         }
-        
+        .register-header-theme-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+        .register-header .logo-badge {
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
         .register-header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
-        
-        .register-header p {
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-        
         .register-body {
             padding: 30px;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
-            font-size: 0.9rem;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-        
-        .form-control:focus {
-            outline: none;
-                border-color: var(--primary);
-                box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-                background: white;
-            }
-            
-            .password-toggle {
-                position: absolute;
-                right: 15px;
-                top: 38px;
-                background: none;
-                border: none;
-                color: #6c757d;
-                cursor: pointer;
-                z-index: 2;
-            }
-            
-            .password-requirements {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 5px;
-        }
-        
-        .password-strength {
-            height: 4px;
-            background: #e9ecef;
-            border-radius: 2px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        
-        .password-strength-bar {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s ease;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .btn:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-        
-        .alert {
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .alert-danger {
-            background: #ffe6e6;
-            color: var(--danger);
-            border-left: 4px solid var(--danger);
-        }
-        
-        .alert-success {
-            background: #e6f7e6;
-            color: #2e7d32;
-            border-left: 4px solid #2e7d32;
-        }
-        
-        .register-footer {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .register-footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .register-footer a:hover {
-            text-decoration: underline;
-        }
-        
         .user-type-options {
             display: grid;
             grid-template-columns: 1fr;
             gap: 10px;
             margin-top: 10px;
         }
-        
         .user-type-option {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             text-align: center;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
-        
-        .user-type-option:hover {
+        .user-type-option:hover, .user-type-option.selected {
             border-color: var(--primary);
-            background: #f8f9ff;
-        }
-        
-        .user-type-option.selected {
-            border-color: var(--primary);
-            background: #f0f4ff;
-        }
-        
-        .user-type-option i {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
+            background: var(--primary-light);
             color: var(--primary);
         }
-        
-        @media (max-width: 480px) {
-            .register-container {
-                border-radius: 15px;
-            }
-            
-            .register-header {
-                padding: 25px 20px;
-            }
-            
-            .register-body {
-                padding: 25px 20px;
-            }
+        .register-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+        .register-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <div class="register-header">
-            <h1><i class="fas fa-user-plus"></i> Create Account</h1>
-            <p>Join Dorm Management System</p>
-        </div>
-        
-        <div class="register-body">
-            <?php if (!empty($error)): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+    <div class="register-card-wrapper">
+        <div class="register-container">
+            <div class="register-header">
+                <div class="register-header-theme-toggle">
+                    <button class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                 </div>
-            <?php endif; ?>
+                <div class="logo-badge">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1>Create Account</h1>
+                <p>Join Enterprise Dorm Management System</p>
+            </div>
             
-            <form method="POST" action="" id="registerForm">
+            <div class="register-body">
+                <?php if (!empty($error)): ?>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+                    </div>
+                <?php endif; ?>
+                
+                <form method="POST" action="" id="registerForm">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 
                 <div class="form-group">
@@ -463,6 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
+</div>
 
     <script>
         // User type selection
